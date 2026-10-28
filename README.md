@@ -1,125 +1,105 @@
-# OriginPro scripts for D114, folder B, subfolder all
+# Origin-Python-Control
 
-These are the scripts used on 28 October 2026 against the OriginPro session that already had D114.opju open. Python-Origin-Graph (https://github.com/Craig-Venables/Python-Origin-Graph) is the older plotting repo and was not cloned on this PC, so this folder, Origin-Python-Control, is the local copy next to the other GitHub folders.
+Python scripts that drive a running OriginPro session. They were written on 28 October 2026 for the open project D114, and they use the `originpro` package the same way [Python-Origin-Graph](https://github.com/Craig-Venables/Python-Origin-Graph) does: `import originpro as op`, then create books and fill columns with `wks.from_list`, including long names and units.
 
-None of these scripts save the project or close Origin. The new workbooks are in the open session until D114.opju is saved from Origin.
+This repository is local only. It has not been pushed.
 
-## Paths
+## What the project does
 
-- Project file: `C:\Users\craig\OneDrive - The University of Nottingham\Documents\Phd\1) Projects\1) Memristors\Graphs (origin)\D114.opju`
-- Project Explorer folder used for every job: `/D114/B/all/`
-- Origin program: `C:\Program Files\OriginLab\Origin2026b\Origin64.exe` (OriginPro 2026b, process Origin64)
-- Python: `C:\Users\craig\AppData\Local\Programs\Python\Python310\python.exe`
-- Package: `originpro`, installed with `py -3 -m pip install originpro`
+The source data is already inside D114, in Project Explorer folder `/D114/B/all/`. That folder holds 17 sweep workbooks. Each book is one text file imported as three columns: Voltage (V), Current (A), and Time (T).
 
-The same approach as Python-Origin-Graph: `import originpro as op`, then `op.new_book` and `wks.from_list` to write columns, including the long name and units.
+The scripts, in the order they were run:
 
-## Connecting without starting a second Origin
+1. List those workbooks.
+2. Copy all 17 into one new workbook, `allcombined`, without changing the originals.
+3. Copy them again into two workbooks split by sweep voltage: `v1p0` (1.0 V) and `v1p5` (1.5 V). Voltage columns in those two books are X columns. Each new column's comment is the first two characters of the source filename.
+4. Add an Absolute Current column beside every Current column in those three combined books.
+5. Draw one graph per combined book. Every sweep in that book is a line on the same axes: voltage on X, absolute current on Y.
 
-1. OriginPro must already be open with D114.
-2. In the script, call `op.attach()` before any other originpro call. That uses Origin's single-instance COM object and attaches to the running process.
-3. Call `op.set_show(True)` so the window stays visible.
-4. Do not call `op.exit()`. When the script finishes, originpro only releases the link.
+Nothing here saves `D114.opju` or closes Origin. Save from Origin when the new books and graphs should be kept on disk.
 
-Skipping `op.attach()` is the workaround that matters. The package would otherwise construct `Origin.Application()`, which starts a second Origin instead of using the one already open.
+## Prerequisites
 
-`list_folder_workbooks.py` was the inventory step. It finds Book51, changes to that book's folder (`/D114/B/all/`), and prints each workbook's long name and the long name and units of its columns. That run showed 17 sweep books, each with Voltage (V), Current (A), and Time (T).
+- Windows, with OriginPro already running and D114.opju open. These scripts attach to that process. They do not start Origin.
+- OriginPro 2026b, installed at `C:\Program Files\OriginLab\Origin2026b\`. The process name is `Origin64`.
+- Python 3.10: `C:\Users\craig\AppData\Local\Programs\Python\Python310\python.exe` (`py -3` on this PC).
+- The `originpro` package:
 
-The files in `connection-probes\` were earlier experiments (listing COM methods and LabTalk strings). They are not needed to repeat the jobs.
+```
+py -3 -m pip install originpro
+```
 
-## 1. One workbook for all 17 sweeps — `combine_all_workbooks.py`
+The files in `connection-probes\` also need `pywin32` (`pip install pywin32`). The main scripts do not.
 
-Run only if you want another full copy. The short-name guard looks for `all_combined`, but Origin stored the book as `allcombined`, so running this again will not see the existing book and will create a second one.
+## How a script connects
 
-What it does:
+Every main script starts like this, and `op.attach()` has to be the first originpro call:
 
-1. Goes to `/D114/B/all/` and stops if that is not the active folder.
-2. Reads every workbook in that folder: values, long name, units, and comments.
-3. Creates a book with long name `all combined`. The script asks for short name `all_combined`. Origin saved the short name as `allcombined` (the underscore was dropped).
-4. Writes the columns in folder order so each file's voltage, current, and time stay together. Long names and units are copied as they were. 17 books times 3 columns is 51 columns.
-5. Sets a user-parameter row named Source to the source book's long name (the txt filename). That does not change the long name or the units. It is there so repeated Voltage / Current / Time headers can be told apart.
-6. Reads the source books again and compares labels and the first and last value in each column. The run reported no mismatches.
+```python
+import originpro as op
+op.attach()
+op.set_show(True)
+```
 
-This script does not set column plot type. On a new sheet the first column stays X and the columns added after it stay Y. That is why, in `allcombined`, only the first Voltage column is an X column. The later Voltage columns were left as they were.
+`op.attach()` uses Origin's single-instance COM object, so the call joins the OriginPro window that is already open. If you skip it, the package builds `Origin.Application()`, which starts a second Origin and will not see the open D114 project.
 
-## 2. Separate 1.0 V and 1.5 V books — `group_by_sweep_voltage.py`
+`op.set_show(True)` keeps that window visible. Do not call `op.exit()`. When the script ends, originpro drops the link and leaves Origin running.
 
-Filename shape: `b22-FS-1.0v-0.05sv-0.05sd-Py-Simple_1.5V-.txt`
+The scripts then move Project Explorer to `/D114/B/all/` and refuse to write if that is not the active folder.
 
-The group is the first `-<number>v` token. For that example it is `1.0`. The `_1.5V` near the end of many names is not the group. `allcombined` does not match the pattern, so it was skipped.
+## Names inside D114
 
-Groups found:
+The project file is:
 
-- 1.0 V, 8 files: b22, b32, b42, b52, b62, b82, b960, b1059. All of these names continue `-FS-1.0v-...`.
-- 1.5 V, 9 files: b24, b115, b34, b44, b54, b84, b962, b1061, b64.
+`C:\Users\craig\OneDrive - The University of Nottingham\Documents\Phd\1) Projects\1) Memristors\Graphs (origin)\D114.opju`
 
-What it does:
+Project Explorer path used by every script: `/D114/B/all/`
 
-1. Same attach and folder check as the first script.
-2. Creates two books in `/D114/B/all/`.
-   - Short name `v1p0`, long name `combined 1.0v` (24 columns). `p` stands for the decimal point, because the short name cannot keep a dot.
-   - Short name `v1p5`, long name `combined 1.5v` (27 columns).
-3. Copies voltage, current, and time with the original long names and units.
-4. Writes the first two characters of the source filename into the comment of each of that file's columns. `b22-FS-...` gives comment `b2`. `b115-FS-...` gives `b1`. The characters keep the filename's own case.
-5. For a column whose long name is Voltage, `from_list` is called with `axis='X'`.
+That is project D114, folder B, subfolder `all`. The 17 sweep books live directly in `all`, not in a further subfolder.
 
-If `v1p0` or `v1p5` already exist, the script stops and does not write.
+Each sweep book's long name is the text filename. The shape is:
 
-### Column type
+`b22-FS-1.0v-0.05sv-0.05sd-Py-Simple_1.5V-.txt`
 
-`SetColDesignations` on a worksheet is `(designation, repeat, firstColumn, lastColumn)`. `from_list(..., axis='X')` calls it as `SetColDesignations('X', 0, thatColumn, thatColumn)`, which sets only that column to X.
+Read it as:
 
-Do not trust LabTalk `wks.col.type` for this check. On these sheets it returned 4 for the voltage columns, and 4 is the old code for a label column, which is the wrong reading. The column object's `GetType()` matches the original sweep books: voltage is 3 (X) and current and time are 0 (Y). `check_column_types.py` prints that. After the grouped books were built, every voltage column in `v1p0` and `v1p5` had `GetType()` 3.
+| Piece | Example | Meaning |
+| --- | --- | --- |
+| First two characters | `b2` | Written into the column comment by the grouping script. `b115-FS-...` gives `b1`. Case stays as in the filename. |
+| Device token | `b22` | The bit before `-FS-`. |
+| Sweep voltage | `1.0` in `-FS-1.0v` | The first `-<number>v` token. This is the group: 1.0 V or 1.5 V. |
+| Later tokens | `0.05sv`, `0.05sd` | Step and delay. Not used for grouping. |
+| Trailing `_1.5V` | on many names | Not the group. It appears on both 1.0 V and 1.5 V files. |
 
-## 3. Absolute current — `add_absolute_current.py`
+Books created by the scripts, all in `/D114/B/all/`:
 
-Adds a column immediately after every current column in the three combined books only: `allcombined`, `v1p0`, and `v1p5`. Original sweep books are not opened for writing. Book35 stayed at 3 columns.
+| Short name | Long name | What it is |
+| --- | --- | --- |
+| `allcombined` | all combined | All 17 sweeps side by side. The script asked for `all_combined`; Origin dropped the underscore. |
+| `v1p0` | combined 1.0v | The eight 1.0 V files. `p` stands for the decimal point. |
+| `v1p5` | combined 1.5v | The nine 1.5 V files. |
+| `gAbsAll` | allcombined \|I\| vs V | One graph, 17 lines, from `allcombined`. |
+| `gAbs10` | combined 1.0v \|I\| vs V | One graph, 8 lines, from `v1p0`. |
+| `gAbs15` | combined 1.5v \|I\| vs V | One graph, 9 lines, from `v1p5`. |
 
-A column counts as current if its long name is `Current`, or its unit is A / amp / amps. Columns whose long name already contains "absolute" are ignored, so a second run does not add another copy when Absolute Current already sits beside Current.
+Column order in the three combined books, repeated once per source file: Voltage, Current, Absolute Current, Time. Long names and units on Voltage, Current, and Time are copies of the source. Absolute Current is in amps (A).
 
-For each match it inserts, immediately to the right:
+## Repository layout
 
-- Long name: `Absolute Current`
-- Unit: `A`
-- Values: the absolute value of that current column. Empty cells stay empty.
-- Comment and Source parameter, if the current column had them, are copied onto the new column. In `v1p0` and `v1p5` the comment is still the two-character filename prefix (`b2`, `b3`, and so on). In `allcombined` the Source row still carries the txt filename.
-- Plot type of the new column is Y. Existing columns keep the plot type they already had, including X on the voltage columns in `v1p0` and `v1p5`.
+```
+Origin-Python-Control/
+  README.md
+  list_folder_workbooks.py              read-only inventory of /D114/B/all/
+  combine_all_workbooks.py              build allcombined
+  group_by_sweep_voltage.py             build v1p0 and v1p5
+  add_absolute_current.py               add |I| beside each current column
+  plot_voltage_vs_absolute_current.py   one overlaid graph per combined book
+  check_column_types.py                 print GetType() for Book35 and v1p0
+  check_absolute_current.py             print a sample |I| pair from each combined book
+  connection-probes/                    early COM experiments, not needed to repeat the jobs
+```
 
-Resulting sizes:
-
-- `allcombined`: 51 columns before, 17 absolute-current columns added, 68 after
-- `v1p0`: 24 before, 8 added, 32 after
-- `v1p5`: 27 before, 9 added, 36 after
-
-Column order in each group is Voltage, Current, Absolute Current, Time. A negative current such as `-6.93e-10` became `6.93e-10` in the new column. `check_absolute_current.py` prints a sample pair from each book.
-
-## 4. One overlaid plot per workbook — `plot_voltage_vs_absolute_current.py`
-
-One graph for each combined workbook. Every sweep in that book is a line on the same graph. Voltage is X. Absolute current is Y. There is not a separate graph per sweep.
-
-The Python-Origin-Graph repo plots with `wks.plot_cloneable` and a cloneable template (`LOG+IV_v3.otpu` or `Electron_transport_Final.otpu`). Those templates expect one sweep laid out in fixed columns, including calculated transport columns, so they were not used on these side-by-side sheets. The plot still goes through originpro: `op.new_graph` uses Origin's line template, then `layer.add_plot(..., type='l')` adds one line per sweep.
-
-What it does:
-
-1. Same attach, and it works in `/D114/B/all/`.
-2. In each of `allcombined`, `v1p0`, and `v1p5`, pairs every Voltage column with the Absolute Current column that follows it.
-3. Creates one graph and adds every pair as a line. The X and Y of each line are set explicitly, so a voltage column that is still marked Y in `allcombined` is still used as X on the graph.
-4. Rescales the axes. X title is `Voltage (V)`. Y title is `Absolute Current (A)`.
-5. The legend uses the Source filename when that row is set (`allcombined`), otherwise the two-character comment (`b2`, `b3`, and so on).
-
-Graphs, all in `/D114/B/all/`:
-
-| Workbook | Graph short name | Long name | Traces |
-| --- | --- | --- | --- |
-| allcombined | gAbsAll | allcombined \|I\| vs V | 17 |
-| v1p0 | gAbs10 | combined 1.0v \|I\| vs V | 8 |
-| v1p5 | gAbs15 | combined 1.5v \|I\| vs V | 9 |
-
-The script stops if one of those short names already exists. It does not change the worksheet columns.
-
-## Run them
-
-From a command prompt, with Origin already open on D114:
+Run them from a command prompt with Origin already open on D114. The order below is the order that built the books. Later scripts expect the books from the earlier ones.
 
 ```
 py -3 "C:\Users\craig\OneDrive\Documents\GitHub\Origin-Python-Control\list_folder_workbooks.py"
@@ -129,4 +109,118 @@ py -3 "C:\Users\craig\OneDrive\Documents\GitHub\Origin-Python-Control\add_absolu
 py -3 "C:\Users\craig\OneDrive\Documents\GitHub\Origin-Python-Control\plot_voltage_vs_absolute_current.py"
 ```
 
-Save D114.opju from Origin when the new books should be kept on disk. These scripts do not save it.
+## What each script does
+
+### `list_folder_workbooks.py`
+
+Input: the open project. It looks up the workbook short name `Book51` and changes to that book's folder, which is `/D114/B/all/`.
+
+Output: printed lines only. For each workbook in the folder it prints the short name, the long name (the txt filename), the column count, the row count, and the long name and units of the first columns. The run that started this work found 17 books, each with Voltage (V), Current (A), and Time (T). It does not create or edit anything.
+
+### `combine_all_workbooks.py`
+
+Input: every workbook currently in `/D114/B/all/`.
+
+Steps:
+
+1. Attach, show Origin, and go to `/D114/B/all/`. Stop if the active folder is anything else.
+2. Read each workbook's columns: values, long name, units, comments, row count, and the first and last value.
+3. Create a workbook with long name `all combined` and ask for short name `all_combined`. Origin stored the short name as `allcombined`.
+4. Write the columns in folder order so each file's voltage, current, and time stay together. Long names and units are copied as they were. 17 books times 3 columns made 51 columns.
+5. Set a user-parameter row named Source to the source book's long name, so the repeated Voltage / Current / Time headers can be told apart. That row is not the long name and not the units.
+6. Read the source books again and compare labels and endpoints. The run reported no mismatches.
+
+This script does not set plot designation. On a new sheet the first column stays X and later columns stay Y, so in `allcombined` only the first Voltage column is an X column.
+
+Do not run it again to "refresh" the book. The guard looks for the short name `all_combined`, which is not the name Origin kept, so a second run creates another workbook.
+
+### `group_by_sweep_voltage.py`
+
+Input: workbooks in `/D114/B/all/` whose long name matches `b22-FS-1.0v-...`. `allcombined` does not match, so it is skipped.
+
+The group key is the first `-<number>v` token (`1.0` or `1.5`), not the `_1.5V` near the end of a name.
+
+Groups from the session:
+
+- 1.0 V, 8 files: b22, b32, b42, b52, b62, b82, b960, b1059.
+- 1.5 V, 9 files: b24, b115, b34, b44, b54, b84, b962, b1061, b64.
+
+Steps:
+
+1. Same attach and folder check.
+2. Create `v1p0` / `combined 1.0v` and `v1p5` / `combined 1.5v` in `/D114/B/all/`.
+3. Copy voltage, current, and time with the original long names and units.
+4. Put the first two filename characters in the comment of each of that file's columns.
+5. For a column whose long name is Voltage, call `from_list` with `axis='X'`.
+
+Before the absolute-current step these books had 24 and 27 columns. The script stops if `v1p0` or `v1p5` already exist.
+
+`from_list(..., axis='X')` calls `SetColDesignations('X', 0, thatColumn, thatColumn)`. The arguments are designation, repeat flag, first column, last column, so only that one column becomes X.
+
+Check plot type with the column object's `GetType()`, not LabTalk `wks.col.type`. On these sheets `wks.col.type` returned 4, which is the old code for a label column and is the wrong reading. `GetType()` matches the original sweeps: voltage is 3 (X), current and time are 0 (Y). `check_column_types.py` prints the first columns of `Book35` and `v1p0`. After grouping, every voltage column in `v1p0` and `v1p5` was type 3.
+
+### `add_absolute_current.py`
+
+Input: the three combined books `allcombined`, `v1p0`, and `v1p5`. It does not write the original sweep books. `Book35` stayed at 3 columns.
+
+A column counts as current when its long name is `Current`, or its unit is A, amp, or amps. A long name that already contains "absolute" is ignored, so a second run does not insert another copy when Absolute Current is already beside Current.
+
+Immediately to the right of each match it inserts:
+
+- Long name `Absolute Current`, unit `A`.
+- The absolute value of that current. Empty cells stay empty.
+- The same comment and Source parameter as the current column, when those were set.
+- Plot type Y. Existing columns keep the type they already had.
+
+Sizes after this step: `allcombined` 68 columns (17 new), `v1p0` 32 (8 new), `v1p5` 36 (9 new). A value such as `-6.93e-10` became `6.93e-10`. `check_absolute_current.py` prints one such pair from each book.
+
+### `plot_voltage_vs_absolute_current.py`
+
+Input: the three combined books, after absolute current exists. It does not change worksheet columns.
+
+One graph per workbook. Every sweep in that book is a line on that one graph. There is not a separate graph per sweep.
+
+Python-Origin-Graph plots with `wks.plot_cloneable` and a cloneable template (`LOG+IV_v3.otpu` or `Electron_transport_Final.otpu`). Those templates expect one sweep in a fixed set of columns, including transport calculations, so they were not used on these side-by-side sheets. This script still plots through originpro: `op.new_graph` opens Origin's line template, then `layer.add_plot(..., type='l')` adds one line per sweep. X and Y are set explicitly, so a voltage column that is still marked Y in `allcombined` is still the X of its line.
+
+Steps:
+
+1. Attach and require `/D114/B/all/`.
+2. Pair each Voltage column with the Absolute Current column that follows it.
+3. Add every pair as a line, rescale, and title the axes `Voltage (V)` and `Absolute Current (A)`.
+4. Legend text is the Source filename when that row is set (`allcombined`), otherwise the two-character comment.
+
+The script stops if `gAbsAll`, `gAbs10`, or `gAbs15` already exist.
+
+## Templates for a single sweep
+
+Python-Origin-Graph and the copy under Pandas_test `Graph/Origin/` each keep the same three files: `Electron_transport_Final.otpu` (transport curves), `LOG+IV_v3.otpu` (IV and log IV), and `MasterTemplate_v2.ogwu` (a workbook template, not a graph style). Those graph templates expect one sweep laid out in fixed columns.
+
+On this PC there is also a user-defined cloneable template for plotting an individual IV sweep later:
+
+`C:\Users\craig\Documents\OriginLab\User Files\IV+LOGIV(INDEX).otpu`
+
+The name on disk is `IV+LOGIV(INDEX).otpu`. Use it with `wks.plot_cloneable` on a single-sweep sheet, the same way Python-Origin-Graph uses `LOG+IV_v3.otpu`. It is not wired into the scripts in this repo.
+
+## Highlighting the first sweep
+
+For a plot with 20 or more sweeps, and especially 50 or more, highlight the first sweep in red so it can be seen among the others.
+
+Do it this way:
+
+1. Work out the voltage trace and how many loops it contains.
+2. Divide the trace by that number of loops so the first sweep is a block of points on its own.
+3. Put just that first sweep into a new column. Leave the other sweeps as they are.
+4. Draw that new column in red, with a slightly thicker line.
+5. Give both the red trace and the other traces a little transparency.
+
+None of the scripts here do this yet. It is the preference for the next large multi-sweep plot.
+
+### Check scripts
+
+`check_column_types.py` prints `GetType()` and the first three labels for `Book35` and `v1p0`. It only reads.
+
+`check_absolute_current.py` prints the column count of `allcombined`, `v1p0`, and `v1p5`, and one negative current next to its absolute value. It only reads.
+
+## Connection probes
+
+`connection-probes\` holds the first attempts, made with `win32com` and `Origin.ApplicationSI` before the jobs switched to `originpro`. They print the active page, COM method names, or column labels. They are not part of the combine or plot sequence. Several of them call `BeginSession` and `EndSession`; run those only if you mean to poke at the live session.

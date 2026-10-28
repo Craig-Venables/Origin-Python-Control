@@ -1,6 +1,19 @@
-"""One graph per combined workbook: every sweep, voltage vs absolute current.
+"""Draw one overlaid graph per combined workbook.
 
-Does not change worksheet columns and does not save the project.
+Purpose
+    One graph each for allcombined, v1p0, and v1p5. Every sweep in that
+    book is a line on the same axes: voltage on X, absolute current on Y.
+    Not one graph per sweep.
+
+Input
+    The open OriginPro session, folder /D114/B/all/, after absolute-current
+    columns exist. Worksheet columns are not modified.
+
+Output
+    Graphs gAbsAll, gAbs10, and gAbs15 in that folder. Axis titles are
+    Voltage (V) and Absolute Current (A). The legend uses the Source
+    filename or, if that is empty, the two-character column comment.
+    Does not save the project. Stops if one of those graph names exists.
 """
 import originpro as op
 

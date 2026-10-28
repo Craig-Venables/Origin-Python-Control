@@ -1,7 +1,20 @@
-"""Group /D114/B/all/ sweep books by the voltage in the filename.
+"""Split /D114/B/all/ sweep books into one workbook per sweep voltage.
 
-Creates new workbooks only. Does not save the project and does not change
-source books.
+Purpose
+    Group filenames such as b22-FS-1.0v-... by the first -<number>v token
+    (1.0 or 1.5, not the trailing _1.5V). Copy voltage, current, and time.
+    Put the first two filename characters in the column comments, and mark
+    Voltage columns as X.
+
+Input
+    The open OriginPro session and /D114/B/all/. Books whose long name does
+    not match that filename pattern, including allcombined, are skipped.
+
+Output
+    v1p0 ("combined 1.0v") and v1p5 ("combined 1.5v") in the same folder.
+    Prints the groups, then whether labels, units, and comments match.
+    Does not save the project and does not change the source books.
+    Stops if v1p0 or v1p5 already exist.
 """
 import math
 import re

@@ -1,7 +1,19 @@
-"""Create one new workbook in /D114/B/all/ from the books already there.
+"""Copy every workbook in /D114/B/all/ into one new workbook.
 
-Reads each source column and writes it into a new book. Does not save the
-project and does not delete or rewrite source books.
+Purpose
+    Side-by-side copy of the D114 sweep books. Each source keeps voltage,
+    current, and time together. Long names and units are copied as they are.
+
+Input
+    The open OriginPro session, with Project Explorer able to open
+    /D114/B/all/. Every workbook in that folder is a source.
+
+Output
+    A new workbook in that folder, long name "all combined". Origin stores
+    the short name as allcombined. A Source parameter row holds each source
+    book's long name. Prints a label check and whether source books still
+    match the values that were read. Does not save the project and does not
+    edit the source books.
 """
 import math
 import originpro as op

@@ -1,4 +1,16 @@
-﻿import originpro as op
+﻿"""List the workbooks in the folder that contains Book51.
+
+Purpose
+    Read-only inventory before combining. Book51 lives in /D114/B/all/.
+
+Input
+    The open OriginPro session, with a workbook whose short name is Book51.
+
+Output
+    Printed short name, long name, column count, row count, and the long
+    name and units of the first columns. Creates and edits nothing.
+"""
+import originpro as op
 op.attach()
 op.set_show(True)
 path = op.pe.search("Book51", 0)

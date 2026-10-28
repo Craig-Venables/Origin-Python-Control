@@ -1,7 +1,20 @@
-"""Add an Absolute Current column immediately after every Current column.
+"""Insert an Absolute Current column beside every Current column.
 
-Touches only allcombined, v1p0, and v1p5. Does not save the project and
-does not change the original sweep books.
+Purpose
+    For each current column, add the absolute value immediately to its right.
+    Long name "Absolute Current", unit A. Existing columns stay in place.
+
+Input
+    The open OriginPro session. Only the workbooks allcombined, v1p0, and
+    v1p5 are written. A column counts as current when its long name is
+    Current or its unit is amps. Columns already named Absolute Current
+    are left alone.
+
+Output
+    Those three books gain one new column per current column. Comments and
+    the Source parameter are copied from the current column when set.
+    Prints how many columns were added. Does not save the project and does
+    not change the original sweep books.
 """
 import math
 

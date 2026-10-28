@@ -1,4 +1,17 @@
-﻿import originpro as op
+﻿"""Spot-check Absolute Current against Current in the three combined books.
+
+Purpose
+    Confirm each combined book has Absolute Current beside Current, and that
+    a negative current was stored as a positive value.
+
+Input
+    The open OriginPro session, with allcombined, v1p0, and v1p5 present.
+
+Output
+    Printed column counts, long names, units, comments, one sample pair,
+    and the voltage column types. Read only.
+"""
+import originpro as op
 op.attach()
 op.set_show(True)
 for name in ("allcombined", "v1p0", "v1p5"):
