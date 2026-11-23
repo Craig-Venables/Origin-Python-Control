@@ -1,0 +1,9 @@
+sample_id	concentration_mgml	electrodes	labels	n_devices	n_memristive_sweeps	sweeps_err_low	sweeps_err_high	n_ge4	n_eligible_ge4	yield_ge4	yield_ge4_pct	yield_ge4_err_low	yield_ge4_err_high	yield_ge4_pct_err_low	yield_ge4_pct_err_high	n_ge10	n_eligible_ge10	yield_ge10	yield_ge10_pct	yield_ge10_err_low	yield_ge10_err_high	yield_ge10_pct_err_low	yield_ge10_pct_err_high	n_ge20	n_eligible_ge20	yield_ge20	yield_ge20_pct	yield_ge20_err_low	yield_ge20_err_high	yield_ge20_pct_err_low	yield_ge20_pct_err_high
+D60	0.005	ITO/gold	hand	10	250	0	0	7	7	1	100	0	0	0	0	6	6	1	100	0	0	0	0	4	4	1	100	0	0	0	0
+D80	0.1	ITO/gold	hand	12	111	0	0	7	12	0.583333	58.3	0	0	0	0	6	11	0.545455	54.5	0	0	0	0	1	5	0.2	20	0	0	0	0
+D94	0.1	ITO/gold	hand	10	78	0	0	4	10	0.4	40	0	0	0	0	3	9	0.333333	33.3	0	0	0	0	1	4	0.25	25	0	0	0	0
+D96	0.1	ITO/gold	hand	10	2	0	0	0	10	0	0	0	0	0	0	0	10	0	0	0	0	0	0	0	0						
+D105	0.1	ITO/gold	hand	6	9	0	0	2	3	0.666667	66.7	0	0	0	0	0	1	0	0	0	0	0	0	0	0						
+D110	0.1	ITO/gold	hand	19	151	0	0	9	19	0.473684	47.4	0	0	0	0	6	19	0.315789	31.6	0	0	0	0	2	3	0.666667	66.7	0	0	0	0
+D114	0.1	ITO/gold	hand	29	374	0	0	21	27	0.777778	77.8	0	0	0	0	11	21	0.52381	52.4	0	0	0	0	8	11	0.727273	72.7	0	0	0	0
+D31	0.1	gold/gold	PC	10	35	0	0	5	9	0.555556	55.6	0	0	0	0	1	2	0.5	50	0	0	0	0	0	0						

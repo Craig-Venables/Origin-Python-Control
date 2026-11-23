@@ -2,7 +2,7 @@
 
 Python scripts that drive a running OriginPro session. They were written on 28 October 2026 for the open project D114, and they use the `originpro` package the same way [Python-Origin-Graph](https://github.com/Craig-Venables/Python-Origin-Graph) does: `import originpro as op`, then create books and fill columns with `wks.from_list`, including long names and units.
 
-This repository is local only. It has not been pushed.
+The repository is at [Origin-Python-Control](https://github.com/Craig-Venables/Origin-Python-Control). Runnable examples are in [`examples/`](examples/README.md).
 
 ## What the project does
 
