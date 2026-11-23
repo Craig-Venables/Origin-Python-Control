@@ -1,0 +1,72 @@
+{
+  "name": "D114 B8",
+  "origin": "/D114/B/8/Cf/cf_cursor/",
+  "data_root": "C:\\Users\\craig\\OneDrive - The University of Nottingham\\Documents\\Data_folder\\D114\\B\\8\\Solartron_1260",
+  "compare_book": "cfAll",
+  "compare_graph": "gCfAll",
+  "context": "D114 device B8, 0.00 V",
+  "spectra": [
+    {
+      "key": "pristine",
+      "book": "cfPrist",
+      "graph": "gCfPrist",
+      "title": "Pristine",
+      "model": "rcpe",
+      "folder": "1-device_only_Pristine_20260811_113130",
+      "file": "D114_Pristine_VBp0.000.csv",
+      "color": "#1f4e79"
+    },
+    {
+      "key": "pass",
+      "book": "cfPass",
+      "graph": "gCfPass",
+      "title": "After 1.5 V",
+      "model": "rcpe",
+      "folder": "2-device_only_after_first_1_5_pass_20260811_115002",
+      "file": "D114_after_first_1_5_pass_VBp0.000.csv",
+      "color": "#0f7b6c"
+    },
+    {
+      "key": "ret",
+      "book": "cfRet",
+      "graph": "gCfRet",
+      "title": "After retention",
+      "model": "rcpe",
+      "folder": "3-device_only_later_post_retentions__12_sweeps__20260811_131133",
+      "file": "D114_later_post_retentions__12_sweeps__VBp0.000.csv",
+      "color": "#9a7209"
+    },
+    {
+      "key": "jump",
+      "book": "cfJump",
+      "graph": "gCfJump",
+      "title": "After first jump",
+      "model": "rcpe",
+      "folder": "4-device_only_post_jump_20260811_141528",
+      "file": "D114_post_jump_VBp0.000.csv",
+      "color": "#c45c26"
+    },
+    {
+      "key": "p48",
+      "book": "cfP48",
+      "graph": "gCfP48",
+      "title": "Pulse 48",
+      "model": "lrcpe",
+      "hold_qn_from": "jump",
+      "folder": "5-device_only_post_jump_v2__48__20260811_143445",
+      "file": "D114_post_jump_v2__48__VBp0.000.csv",
+      "color": "#6c5480"
+    },
+    {
+      "key": "pv2",
+      "book": "cfPv2",
+      "graph": "gCfPv2",
+      "title": "Pulse v2",
+      "model": "lrcpe",
+      "hold_qn_from": "jump",
+      "folder": "6-device_only_post_jump_v2_1_20260811_144531",
+      "file": "D114_post_jump_v2_1_VBp0.000.csv",
+      "color": "#9b2226"
+    }
+  ]
+}

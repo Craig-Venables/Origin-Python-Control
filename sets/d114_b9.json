@@ -1,0 +1,40 @@
+{
+  "name": "D114 B9",
+  "origin": "/D114/B/9/CF/cf_cursor/",
+  "data_root": "C:\\Users\\craig\\OneDrive - The University of Nottingham\\Documents\\Data_folder\\D114\\B\\9\\Solartron_1260",
+  "compare_book": "cf9All",
+  "compare_graph": "gCf9All",
+  "context": "D114 device B9",
+  "spectra": [
+    {
+      "key": "jump",
+      "book": "cf9Jmp",
+      "graph": "gCf9Jmp",
+      "title": "After jump",
+      "model": "lrcpe",
+      "folder": "2-device_only_post_jump_20260811_153205",
+      "file": "D114_post_jump_VBp0.000.csv",
+      "color": "#c45c26"
+    },
+    {
+      "key": "end0",
+      "book": "cf9End",
+      "graph": "gCf9End",
+      "title": "After 1000 cycles, 0 V",
+      "model": "lrcpe",
+      "folder": "3-device_only_post_ednurance1000cyc_20260811_163152",
+      "file": "D114_post_ednurance1000cyc_VBp0.000.csv",
+      "color": "#0f7b6c"
+    },
+    {
+      "key": "end02",
+      "book": "cf9E02",
+      "graph": "gCf9E02",
+      "title": "After 1000 cycles, 0.2 V",
+      "model": "lrcpe",
+      "folder": "4-device_only_post_ednurance1000cyc_20260811_163445",
+      "file": "D114_post_ednurance1000cyc_VBp0.200.csv",
+      "color": "#6c5480"
+    }
+  ]
+}

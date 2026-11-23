@@ -1,0 +1,84 @@
+[General Information]
+Function Name = RsRpCPE
+Brief Description = Rs in series with Rp parallel to a CPE. Two inputs (f, |Z|) and two outputs (Z'/|Z|, -Z''/|Z|) so an unweighted fit is modulus-weighted.
+Function Type = User-Defined
+Function Form = Equations
+Number Of Parameters = 4
+Number Of Independent Variables = 2
+Number Of Dependent Variables = 2
+
+
+[Fitting Parameters]
+Naming Method = User-Defined
+Names = Rs,Rp,QpF,alpha
+Meanings = series resistance (ohm),parallel resistance (ohm),CPE-Q in pF s^(alpha-1),CPE exponent
+Initial Values = 8000(V),2.5E7(V),20(V),0.95(V)
+Lower Bounds = 1(X,ON),1(X,ON),0.001(X,ON),0.4(X,ON)
+Upper Bounds = 1E6(X,ON),1E9(X,ON),100000(X,ON),1(X,ON)
+
+
+[Independent Variables]
+f =
+zm =
+
+
+[Dependent Variables]
+yr =
+yi =
+
+
+[Formula]
+w=2*pi*f;
+c=alpha*pi/2;
+q=QpF*1e-12;
+qw=q*w^alpha;
+A=qw*cos(c);
+B=qw*sin(c);
+inv=1/Rp;
+den=(inv+A)^2+B^2;
+zr=Rs+(inv+A)/den;
+zi=B/den;
+yr=zr/zm;
+yi=zi/zm;
+
+
+[Constants]
+
+
+[Initializations]
+
+
+[After Fitting]
+
+
+[Controls]
+General Linear Constraints = 0
+Initialization Scripts = 0
+Scripts After Fitting = 0
+Number Of Duplicates = N/A
+Duplicate Offset = N/A
+Duplicate Unit = N/A
+Generate Curves After Fitting = 1
+Curve Point Spacing = Uniform on X-Axis Scale
+Generate Peaks After Fitting = 0
+Generate Peaks During Fitting = 0
+Generate Peaks with Baseline = 0
+Paste Parameters to Plot After Fitting = 0
+Paste Parameters to Notes Window After Fitting = 0
+Generate Residuals After Fitting = 0
+Keep Parameters = 0
+Compile On Param Change Script = 1
+Enable Parameters Initialization = 0
+Treat All Numbers As Double = 1
+
+
+[Compile Function]
+Compile = 0
+Compile Parameters Initialization = 0
+OnParamChangeScriptsEnabled = 0.
+
+
+[Parameters Initialization]
+
+
+[Constraints]
